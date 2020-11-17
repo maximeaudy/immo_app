@@ -61,24 +61,44 @@ class EstimateController extends AbstractController
                 var_dump('aucun resultat');die;
             }
 
-            $totalPrice = 0;
-            $totalProperty = 0;
+            $total_property = 0;
+            $total_price = 0;
+            $total_property2014 = 0;
+            $total_price2014 = 0;
+            $total_property2018 = 0;
+            $total_price2018 = 0;
+            $price_average_2014 = 0;
+            $price_average_2018 = 0;
             foreach ($response['resultats'] as $propertySale){
                 if(($propertySale['surface_relle_bati'] == $area || is_null($area)) &&
                     ($propertySale['surface_terrain'] == $surface || is_null($surface)) &&
                     ($propertySale['nombre_pieces_principales'] == $numberRoom || is_null($numberRoom))&&
                     ($propertySale['code_type_local'] == $type || is_null($type)) &&
-                    ($propertySale['section'] == $section || is_null($section))){
-                    $totalProperty++;
-                    $totalPrice += $propertySale['valeur_fonciere'];
+                    ($propertySale['section'] == $section || is_null($section))) {
+                    $total_property++;
+                    $total_price += $propertySale['valeur_fonciere'];
+                    $date = explode("-", $propertySale['date_mutation']);
+                    if ($date[0] === "2014")  {
+                        $total_property2014++;
+                        $total_price2014 += $propertySale['valeur_fonciere'];
+                        $price_average_2014 = round($total_price2014 / $total_property2014, 0);;
+                    } else if ($date[0] === "2018") {
+                        $total_property2018++;
+                        $total_price2018 += $propertySale['valeur_fonciere'];
+                        $price_average_2018 = round($total_price2018 / $total_property2018, 0);;
+                    }
                 }
             }
+            $augmentation = $price_average_2018 / $price_average_2014;
 
-            if($totalProperty == 0){
+            $estimation_2022 = $price_average_2018 * $augmentation;
+
+
+            if($total_property == 0){
                 var_dump('aucun resultat correspondant à votre recherche');die;
             }
 
-            $price = round($totalPrice / $totalProperty, 0);
+            $price = round($total_price / $total_property, 0);
             if($modern){
                 $price = $price * 1.15;
             }
