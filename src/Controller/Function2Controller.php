@@ -18,9 +18,16 @@ class Function2Controller extends AbstractController
     public function function2()
     {
 
+        $form = $this->createFormBuilder()
+        ->add('budget', TextType::class)
+        ->add('code_postal', TextType::class)
+        ->add('code_commune', TextType::class)
+        ->getForm();
+
         $collection_name= 'numero_plan=94068000CQ0110';
         $response = $this->get_response($collection_name);
 
+        if()
         print $this->prix_metre_carre($response);
         return $this->render('function2/function2.html.twig', [
 
@@ -32,13 +39,7 @@ class Function2Controller extends AbstractController
      */
     public function new()
     {
-        $form = $this->createFormBuilder()
-        ->add('budget', TextType::class)
-        ->add('code_postal', TextType::class)
-        ->add('code_commune', TextType::class)
-        ->getForm();
-
-        //$form = $form->getForm();
+        
 
         return $this->render('function2/task/newfunction2task.html.twig',[
             'form'=>$form->createView()
