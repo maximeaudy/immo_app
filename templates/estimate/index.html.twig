@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Estimation du prix{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    {{ form_start(estimatePriceForm) }}
+    {{ form_row(estimatePriceForm.cityCode) }}
+    <label>Section <a href="#" onclick="window.open('https://www.cadastre.gouv.fr/scpc/accueil.do', 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">Connaitre sa section</a></label>
+    {{ form_widget(estimatePriceForm.section) }}
+    {{ form_end(estimatePriceForm) }}
+    {{ dump(estimatePrice) }}
+</div>
+{% endblock %}
