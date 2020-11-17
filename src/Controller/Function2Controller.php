@@ -5,7 +5,10 @@ namespace App\Controller;
 use http\Env\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Form\Type\Function2Type;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 
 class Function2Controller extends AbstractController
 {
@@ -21,6 +24,24 @@ class Function2Controller extends AbstractController
         print $this->prix_metre_carre($response);
         return $this->render('function2/function2.html.twig', [
 
+        ]);
+    }
+
+    /**
+     * @Route("/newfunction2", name="function2")
+     */
+    public function new()
+    {
+        $form = $this->createFormBuilder()
+        ->add('budget', TextType::class)
+        ->add('code_postal', TextType::class)
+        ->add('code_commune', TextType::class)
+        ->getForm();
+
+        //$form = $form->getForm();
+
+        return $this->render('function2/task/newfunction2task.html.twig',[
+            'form'=>$form->createView()
         ]);
     }
 
