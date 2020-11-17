@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use http\Env\Request;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -15,31 +15,26 @@ class Function2Controller extends AbstractController
     /**
      * @Route("/function2", name="function2")
      */
-    public function function2()
-    {
-
-        $collection_name= 'numero_plan=94068000CQ0110';
-        $response = $this->get_response($collection_name);
-
-        print $this->prix_metre_carre($response);
-        return $this->render('function2/function2.html.twig', [
-
-        ]);
-    }
-
-    /**
-     * @Route("/newfunction2", name="function2")
-     */
-    public function new()
+    public function function2(Request $request)
     {
         $form = $this->createFormBuilder()
-        ->add('budget', TextType::class)
-        ->add('code_postal', TextType::class)
-        ->add('code_commune', TextType::class)
-        ->getForm();
+            ->add('budget', TextType::class)
+            ->add('code_postal', TextType::class)
+            ->add('code_commune', TextType::class, array('required'=> false))
+            ->getForm();
 
-        //$form = $form->getForm();
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $collection_name = 'numero_plan=94068000CQ0110';
+            $response = $this->get_response($collection_name);
+            $task = $form->GetData();
 
+
+            print $this->prix_metre_carre($response);
+            return $this->render('function2/function2.html.twig', [
+                'task' => $task
+            ]);
+        }
         return $this->render('function2/task/newfunction2task.html.twig',[
             'form'=>$form->createView()
         ]);
