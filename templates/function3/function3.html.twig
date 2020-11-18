@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <!-- TODO Design -->
+    <h1>Près de chez moi :</h1>
+    <p><a href="https://www.coordonnees-gps.fr/">Trouver mes coordonnées GPS</a></p>
+    <div class="">
+        {{ form_start(form) }}
+            <td class="col-1">Latitude : {{ form_widget(form.latitude) }}</td>
+            <td class="col-1">Longitude : {{form_widget(form.longitude)}}</td>
+            <td class="col">Distance (en m) : {{form_widget(form.distance)}}</td>
+            <button type="submit" class="btn btn-success" >Rechercher</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
