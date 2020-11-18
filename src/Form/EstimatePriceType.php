@@ -56,17 +56,19 @@ class EstimatePriceType extends AbstractType
             ])
             ->add('transport', CheckboxType::class, [
                 'required' => false,
-                'label' => 'Proche des transports (5 minutes à pied)'
+                'label' => 'Proche des transports'
             ])
             ->add('shops', CheckboxType::class, [
                 'required' => false,
-                'label' => 'Proche des commerces (5 minutes à pied)'
+                'label' => 'Proche des commerces'
             ])
             ->add('travaux', CheckboxType::class, [
                 'required' => false,
                 'label' => 'À rénover'
             ])
-            ->add('save', SubmitType::class)
+            ->add('save', SubmitType::class, [
+                'label' => 'Estimer'
+            ])
         ;
     }
 
