@@ -58,12 +58,8 @@ class Function2Controller extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $task = $form->GetData();
-            if ($task['code_postal'] != null)
-                $collection_name = 'code_postal='.$task['code_postal'];
-            
-
+            $collection_name = 'code_postal='.$task['code_postal'];
             $response = $this->get_response($collection_name);
-            
             $this->calculResultat($response, $task['budget_min'], $task['budget_max']);            
             
             return $this->render('function2/function2.html.twig', [
@@ -92,8 +88,6 @@ class Function2Controller extends AbstractController
 
     private function calculResultat ($response, $budget_min, $budget_max)
     {
-        $min = 60000;
-
          if ($response->{'nb_resultats'} > 0)
         {
             for($i=0; $i<$response->{'nb_resultats'}; $i++)
@@ -123,11 +117,13 @@ class Function2Controller extends AbstractController
         $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
         $valeur_fonciere = $temp->{'valeur_fonciere'};
 
-        if($valeur_fonciere < $budget_min || $valeur_fonciere > $budget_max|| $temp->{'code_type_local'} == 4 || $temp->{'code_type_local'} == null
+        if($valeur_fonciere == 0 || $valeur_fonciere < $budget_min || $valeur_fonciere > $budget_max
+        || $temp->{'code_type_local'} == 4 || $temp->{'code_type_local'} == null
         || $surfaceTotal == 0 || $surfaceTotal == null || $temp->{'nombre_lots'} > 0 || $temp->{'surface_relle_bati'} == null || 
         $temp->{'surface_relle_bati'} == 0)
             return -1;
 
+        print $valeur_fonciere.'\n';
         $terrain += $temp->{'surface_terrain'};
         $surface += $temp->{'surface_relle_bati'};
         $totalPos++;
