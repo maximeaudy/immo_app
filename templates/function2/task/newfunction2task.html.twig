@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-{% form_theme form "form2style.html.twig" %}
+{%  form_theme form "form2style.html.twig" %}
 {% block body %}
 
     {% for message in app.flashes('notice') %}
@@ -14,6 +14,8 @@
             <td class="form2input">Budget Max: {{ form_widget(form.budget_max) }}</td>
             <td class="form2input">Budget Min: {{ form_widget(form.budget_min) }}</td>
             <td class="form2input">Code Postal:{{form_widget(form.code_postal)}}</td>
+            <td class="form2input">Type de Bien:{{form_widget(form.type)}}</td>
+
         </div>
         <button type="submit" class="form2btn" >Confirmer</button>
         {{ form_end(form) }}

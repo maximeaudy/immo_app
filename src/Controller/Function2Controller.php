@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,6 +37,13 @@ class Function2Controller extends AbstractController
             ->add('budget_max', IntegerType::class)
             ->add('budget_min', IntegerType::class)
             ->add('code_postal', IntegerType::class)
+            ->add('type',ChoiceType::class,[
+                'choices' =>[
+                    'Appartement' => '2',
+                    'Maison' => '1',
+                    'Terrain à batir' => 'AB',
+                ]
+            ])
             ->getForm();
 
         $form->handleRequest($request);
