@@ -34,8 +34,7 @@ class Function2Controller extends AbstractController
                     }]
                 )
             ]])
-            ->add('budget_max', IntegerType::class)
-            ->add('budget_min', IntegerType::class)
+            ->add('budget', IntegerType::class)
             ->add('code_postal', IntegerType::class)
             ->add('type',ChoiceType::class,[
                 'choices' =>[
@@ -52,7 +51,7 @@ class Function2Controller extends AbstractController
             $collection_name = 'code_postal='.$task['code_postal'];
             $response = $this->get_response($collection_name);
             $resultat = $this->calculResultat($response, $task['budget_min'], $task['budget_max'], $moyenneSurface, $moyenneTerrain, $task['type']);            
-            if($resultat == null){
+            if($resultat == -1){
                 $this->addFlash(
                     'notice',
                     'Aucun resultat trouvé'
@@ -95,17 +94,18 @@ class Function2Controller extends AbstractController
 
             if($totalPos==0)
             {
-                return null;
+                return -1;
             }
             else
             {
                 $moyenneTerrain = round($terrain/$totalPos,0);
                 $moyenneSurface = round($surface/$totalPos,0);
-            }   
+                return 1;
+            }
         }            
         else
         {
-            return null;
+            return -1;
         }
     }
 
