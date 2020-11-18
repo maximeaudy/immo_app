@@ -47,6 +47,7 @@ class Function3Controller extends AbstractController {
                 $error = "Aucune correspondance trouvée";
             }
 
+
             //Vérifications des données
             $indice = 0;
             foreach ($responseDecode as $feature) {
@@ -58,6 +59,9 @@ class Function3Controller extends AbstractController {
                 }
                 if (!array_key_exists('nombre_pieces_principales', $feature['properties'])) {
                     $responseDecode[$indice]['properties']['nombre_pieces_principales'] = 'Aucune';
+                }
+                if (!array_key_exists('type_voie', $feature['properties'])) {
+                    $responseDecode[$indice]['properties']['type_voie'] = '';
                 }
                 $indice++;
             }
