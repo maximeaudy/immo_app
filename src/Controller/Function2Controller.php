@@ -30,7 +30,7 @@ class Function2Controller extends AbstractController
             $task = $form->GetData();
             $collection_name = 'code_postal='.$task['code_postal'];
             $response = $this->get_response($collection_name);
-            $this->fourchette($response, $task['budget_min'], $task['budget_max']);            
+            $this->calculResultat($response, $task['budget_min'], $task['budget_max']);            
             
             return $this->render('function2/function2.html.twig', [
                 
@@ -56,7 +56,7 @@ class Function2Controller extends AbstractController
 
     }
 
-    private function fourchette ($response, $budget_min, $budget_max)
+    private function calculResultat ($response, $budget_min, $budget_max)
     {
         $min = 60000;
 
@@ -65,17 +65,19 @@ class Function2Controller extends AbstractController
             $temp = ($this->getInfoSurface($response, $i, $budget_min, $budget_max, $terrain, $surface, $totalPos));
                 
         }
-        $moyenneTerrain = round($terrain/$totalPos,0);
-        $moyenneSurface = round($surface/$totalPos,0);
 
-        $this-> printResultat($moyenneSurface, $moyenneTerrain);
+        if($totalPos==0)
+        {
+            print("Aucun résultat trouvé pour votre budget");            
+        }
+        else
+        {
+            $moyenneTerrain = round($terrain/$totalPos,0);
+            $moyenneSurface = round($surface/$totalPos,0);
+            print "La surface pour votre budget est d'en moyenne : ".$moyenneSurface."m² avec une surface de terrain de : ".$moyenneTerrain."m²";
+        }           
+    
     }
-
-    private function printResultat ($moyenneSurface, $moyenneTerrain)
-    {
-        print "La surface pour votre budget est d'en moyenne : ".$moyenneSurface."m² avec une surface de terrain de : ".$moyenneTerrain."m²";
-    }
-
 
     private function getInfoSurface($response, $position, $budget_min, $budget_max, &$terrain, &$surface, &$totalPos){
         $temp = $response->{'resultats'}[$position];
@@ -90,7 +92,5 @@ class Function2Controller extends AbstractController
         $terrain += $temp->{'surface_terrain'};
         $surface += $temp->{'surface_relle_bati'};
         $totalPos++; 
-
-        return $prix;
     }
 }
