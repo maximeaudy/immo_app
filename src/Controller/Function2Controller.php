@@ -44,10 +44,11 @@ class Function2Controller extends AbstractController
             $task = $form->GetData();
             $collection_name = 'code_postal='.$task['code_postal'];
             $response = $this->get_response($collection_name);
-            $this->calculResultat($response, $task['budget_min'], $task['budget_max']);            
+            $resultat = $this->calculResultat($response, $task['budget_min'], $task['budget_max'], $moyenneSurface, $moyenneTerrain);            
             
             return $this->render('function2/function2.html.twig', [
-                
+                'moyenneSurface' => $moyenneSurface,
+                'moyenneTerrain' => $moyenneTerrain
             ]);
         }
         return $this->render('function2/task/newfunction2task.html.twig',[
@@ -70,7 +71,7 @@ class Function2Controller extends AbstractController
 
     }
 
-    private function calculResultat ($response, $budget_min, $budget_max)
+    private function calculResultat ($response, $budget_min, $budget_max, &$moyenneSurface, &$moyenneTerrain)
     {
          if ($response->{'nb_resultats'} > 0)
         {
@@ -81,17 +82,19 @@ class Function2Controller extends AbstractController
             }
             if($totalPos==0)
             {
-                print("Aucun résultat trouvé pour votre budget");            
+                //function2($request);            
             }
             else
             {
                 $moyenneTerrain = round($terrain/$totalPos,0);
                 $moyenneSurface = round($surface/$totalPos,0);
-                print "La surface pour votre budget est d'en moyenne : ".$moyenneSurface."m² avec une surface de terrain de : ".$moyenneTerrain."m²";
             }   
         }            
         else
-            print("Aucun résultat trouvé pour votre budget"); 
+        {
+            function2($request);
+        }
+            
     
     }
 
@@ -101,13 +104,12 @@ class Function2Controller extends AbstractController
         $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
         $valeur_fonciere = $temp->{'valeur_fonciere'};
 
-        if($valeur_fonciere == 0 || $valeur_fonciere < $budget_min || $valeur_fonciere > $budget_max
+        if($valeur_fonciere < 100 || $valeur_fonciere < $budget_min || $valeur_fonciere > $budget_max
         || $temp->{'code_type_local'} == 4 || $temp->{'code_type_local'} == null
         || $surfaceTotal == 0 || $surfaceTotal == null || $temp->{'nombre_lots'} > 0 || $temp->{'surface_relle_bati'} == null || 
         $temp->{'surface_relle_bati'} == 0)
             return -1;
 
-        print $valeur_fonciere.'\n';
         $terrain += $temp->{'surface_terrain'};
         $surface += $temp->{'surface_relle_bati'};
         $totalPos++;

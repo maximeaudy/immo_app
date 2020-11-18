@@ -3,7 +3,7 @@
 {% block body %}
     <div class="form2">
         {{ form_start(form) }}
-            {{ form_errors() }}
+            {{ form_errors(form) }}
             <div class="form2textarea">
                 <td class="form2input">Budget Max: {{ form_widget(form.budget_max) }}</td>
                 <td class="form2input">Budget Max: {{ form_errors(form.budget_max) }}</td>
