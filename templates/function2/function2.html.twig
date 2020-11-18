@@ -2,8 +2,14 @@
 
 {% block body %}
     <div>
-       <p>Avec votre budget, la surface possible du bien est d'en moyenne : {{moyenneSurface}}</p>
-       <p>Avec une surface de terrain de : {{moyenneTerrain}}</p>
+        {% if type == "1" %}
+            <p>Avec votre budget, vous pouvez avoir une maison d'en moyenne : {{moyenneSurface}}m²</p>
+            <p>Avec une surface de terrain de : {{moyenneTerrain}}m²</p>
+        {% elseif type == "2"%}
+            <p>Avec votre budget, vous pouvez avoir un appartement d'en moyenne : {{moyenneSurface}}m²</p>
+        {% else %}
+            <p>Avec votre budget, vous pouvez avoir un terrain à batir d'en moyenne : {{moyenneSurface}}m²</p>
+        {% endif %}
     </div>
 {% endblock %}
 

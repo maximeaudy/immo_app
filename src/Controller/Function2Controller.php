@@ -52,9 +52,10 @@ class Function2Controller extends AbstractController
             $task = $form->GetData();
             $collection_name = 'code_postal='.$task['code_postal'];
             $response = $this->get_response($collection_name);
-            $resultat = $this->calculResultat($response, $task['budget_min'], $task['budget_max'], $moyenneSurface, $moyenneTerrain, "1");            
+            $resultat = $this->calculResultat($response, $task['budget_min'], $task['budget_max'], $moyenneSurface, $moyenneTerrain, $task['type']);            
             
             return $this->render('function2/function2.html.twig', [
+                'type' => $task['type'],
                 'moyenneSurface' => $moyenneSurface,
                 'moyenneTerrain' => $moyenneTerrain
             ]);
@@ -79,7 +80,7 @@ class Function2Controller extends AbstractController
 
     }
 
-    private function calculResultat ($response, $budget_min, $budget_max, &$moyenneSurface, &$moyenneTerrain)
+    private function calculResultat ($response, $budget_min, $budget_max, &$moyenneSurface, &$moyenneTerrain, $codeLocal)
     {
          if ($response->{'nb_resultats'} > 0)
         {
