@@ -3,7 +3,8 @@
 {% block body %}
     <div class="">
         {{ form_start(form) }}
-            <td class="col-1">Budget: {{ form_widget(form.budget) }}</td>
+            <td class="col-1">Budget Max: {{ form_widget(form.budget_max) }}</td>
+            <td class="col-1">Budget Min: {{ form_widget(form.budget_min) }}</td>
             <td class="col-1">Code Postal:{{form_widget(form.code_postal)}}</td>
             <td class="col">Commune: {{form_widget(form.code_commune)}}</td>
             <button type="submit" class="btn btn-success" >Confirmer</button>
