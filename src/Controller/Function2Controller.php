@@ -58,8 +58,13 @@ class Function2Controller extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $task = $form->GetData();
-            $collection_name = 'code_postal='.$task['code_postal'];
+            if ($task['code_postal'] != null)
+                $collection_name = 'code_postal='.$task['code_postal'];
+            else
+                $collection_name = 'code_commune='.$task['code_commune'];
+
             $response = $this->get_response($collection_name);
+            print var_dump($response);
             $this->calculResultat($response, $task['budget_min'], $task['budget_max']);            
             
             return $this->render('function2/function2.html.twig', [
@@ -90,22 +95,28 @@ class Function2Controller extends AbstractController
     {
         $min = 60000;
 
-        for($i=0; $i<$response->{'nb_resultats'}; $i++)
+        if ($response -> {'erreur'} != null)
+             print("Aucun résultat trouvé");
+        else if ($response->{'nb_resultats'} > 0)
         {
-            $temp = ($this->getInfoSurface($response, $i, $budget_min, $budget_max, $terrain, $surface, $totalPos));
-                
-        }
-
-        if($totalPos==0)
-        {
-            print("Aucun résultat trouvé pour votre budget");            
-        }
+            for($i=0; $i<$response->{'nb_resultats'}; $i++)
+            {
+                $temp = ($this->getInfoSurface($response, $i, $budget_min, $budget_max, $terrain, $surface, $totalPos));
+                    
+            }
+            if($totalPos==0)
+            {
+                print("Aucun résultat trouvé pour votre budget");            
+            }
+            else
+            {
+                $moyenneTerrain = round($terrain/$totalPos,0);
+                $moyenneSurface = round($surface/$totalPos,0);
+                print "La surface pour votre budget est d'en moyenne : ".$moyenneSurface."m² avec une surface de terrain de : ".$moyenneTerrain."m²";
+            }   
+        }            
         else
-        {
-            $moyenneTerrain = round($terrain/$totalPos,0);
-            $moyenneSurface = round($surface/$totalPos,0);
-            print "La surface pour votre budget est d'en moyenne : ".$moyenneSurface."m² avec une surface de terrain de : ".$moyenneTerrain."m²";
-        }           
+            print("Aucun résultat trouvé pour votre budget"); 
     
     }
 
