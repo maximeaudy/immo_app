@@ -60,11 +60,10 @@ class Function2Controller extends AbstractController
             $task = $form->GetData();
             if ($task['code_postal'] != null)
                 $collection_name = 'code_postal='.$task['code_postal'];
-            else
-                $collection_name = 'code_commune='.$task['code_commune'];
+            
 
             $response = $this->get_response($collection_name);
-            print var_dump($response);
+            
             $this->calculResultat($response, $task['budget_min'], $task['budget_max']);            
             
             return $this->render('function2/function2.html.twig', [
@@ -95,9 +94,7 @@ class Function2Controller extends AbstractController
     {
         $min = 60000;
 
-        if ($response -> {'erreur'} != null)
-             print("Aucun résultat trouvé");
-        else if ($response->{'nb_resultats'} > 0)
+         if ($response->{'nb_resultats'} > 0)
         {
             for($i=0; $i<$response->{'nb_resultats'}; $i++)
             {
