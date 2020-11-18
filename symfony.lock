@@ -102,6 +102,9 @@
     "php": {
         "version": "7.4"
     },
+    "php-ai/php-ml": {
+        "version": "0.9.0"
+    },
     "phpdocumentor/reflection-common": {
         "version": "2.2.0"
     },

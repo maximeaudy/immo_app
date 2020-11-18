@@ -4,6 +4,10 @@
     {{ error }}
 </div>
 {% endif %}
+<div class="alert alert-info w-25 ml-5" role="alert">
+    <p>Prix estimé au mètre carré : {{estimationPrixCarre}} €</p>
+    <p>Nombre d'offres recueillies : {{ response|length }}</p>
+</div>
 <div class="row row-cols-1 row-cols-md-2 row-cols-md-3 row-cols-md-4 cardsFunction3">
     {% for feature in response %}
     <div class="col mb-4">
