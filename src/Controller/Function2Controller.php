@@ -97,9 +97,9 @@ class Function2Controller extends AbstractController
                 'Vous venez d\'ajouter une intervention'
             );
             return $this->redirectToRoute('function');
-        }
-            
-    
+        }           
+
+        
     }
 
     private function getInfoSurface($response, $position, $budget_min, $budget_max, &$terrain, &$surface, &$totalPos){
