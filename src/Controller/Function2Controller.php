@@ -24,9 +24,9 @@ class Function2Controller extends AbstractController
             'constraints' => [
                 new Assert\Callback(
                     ['callback' => static function (array $data, ExecutionContextInterface $context){
-                        if ($data['code_postal']== null && $data['code_commune']== null){
+                        if ($data['budget_max']<= $data['budget_min']){
                             $context
-                                ->buildViolation("Veuillez entrer un code postal ou une Ville")
+                                ->buildViolation("Veuillez entrer un budget max supérieur au budget min")
                                 ->addViolation()
                             ;
                         }
@@ -35,23 +35,7 @@ class Function2Controller extends AbstractController
             ]])
             ->add('budget_max', IntegerType::class)
             ->add('budget_min', IntegerType::class)
-            ->add('code_postal', IntegerType::class,['required'=> false
-                ,'constraints' => [
-                    new Assert\Callback(
-                        ['callback' => static function ($data, ExecutionContextInterface $context) {
-                            if((strlen($data!=0)))
-                            {
-                                if ((!is_numeric($data)) OR (strlen($data)!=5)) {
-                                    $context
-                                        ->buildViolation("Veuillez entrer un code postal valide")
-                                        ->addViolation()
-                                    ;
-                                }
-                            }
-                        }]
-                    )
-                ]])
-            ->add('code_commune', TextType::class, array('required'=> false))
+            ->add('code_postal', IntegerType::class)
             ->getForm();
 
         $form->handleRequest($request);

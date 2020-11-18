@@ -1,13 +1,17 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="">
+    <div class="form2">
         {{ form_start(form) }}
-            <td class="col-1">Budget Max: {{ form_widget(form.budget_max) }}</td>
-            <td class="col-1">Budget Min: {{ form_widget(form.budget_min) }}</td>
-            <td class="col-1">Code Postal:{{form_widget(form.code_postal)}}</td>
-            <td class="col">Commune: {{form_widget(form.code_commune)}}</td>
-            <button type="submit" class="btn btn-success" >Confirmer</button>
+            {{ form_errors() }}
+            <div class="form2textarea">
+                <td class="form2input">Budget Max: {{ form_widget(form.budget_max) }}</td>
+                <td class="form2input">Budget Max: {{ form_errors(form.budget_max) }}</td>
+                <td class="form2input">Budget Min: {{ form_widget(form.budget_min) }}</td>
+                <td class="form2input">Code Postal:{{form_widget(form.code_postal)}}</td>
+            </div>
+                <button type="submit" class="form2btn" >Confirmer</button>
+
 
         {{ form_end(form) }}
     </div>
