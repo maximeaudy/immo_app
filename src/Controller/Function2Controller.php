@@ -9,6 +9,9 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 class Function2Controller extends AbstractController
 {
@@ -17,10 +20,37 @@ class Function2Controller extends AbstractController
      */
     public function function2(Request $request)
     {
-        $form = $this->createFormBuilder()
-            ->add('budget_max', TextType::class)
-            ->add('budget_min', TextType::class)
-            ->add('code_postal', TextType::class)
+        $form = $this->createFormBuilder(null,[
+            'constraints' => [
+                new Assert\Callback(
+                    ['callback' => static function (array $data, ExecutionContextInterface $context){
+                        if ($data['code_postal']== null && $data['code_commune']== null){
+                            $context
+                                ->buildViolation("Veuillez entrer un code postal ou une Ville")
+                                ->addViolation()
+                            ;
+                        }
+                    }]
+                )
+            ]])
+            ->add('budget_max', IntegerType::class)
+            ->add('budget_min', IntegerType::class)
+            ->add('code_postal', IntegerType::class,['required'=> false
+                ,'constraints' => [
+                    new Assert\Callback(
+                        ['callback' => static function ($data, ExecutionContextInterface $context) {
+                            if((strlen($data!=0)))
+                            {
+                                if ((!is_numeric($data)) OR (strlen($data)!=5)) {
+                                    $context
+                                        ->buildViolation("Veuillez entrer un code postal valide")
+                                        ->addViolation()
+                                    ;
+                                }
+                            }
+                        }]
+                    )
+                ]])
             ->add('code_commune', TextType::class, array('required'=> false))
             ->getForm();
 
@@ -80,6 +110,7 @@ class Function2Controller extends AbstractController
     }
 
     private function getInfoSurface($response, $position, $budget_min, $budget_max, &$terrain, &$surface, &$totalPos){
+
         $temp = $response->{'resultats'}[$position];
         $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
         $valeur_fonciere = $temp->{'valeur_fonciere'};
@@ -91,6 +122,7 @@ class Function2Controller extends AbstractController
 
         $terrain += $temp->{'surface_terrain'};
         $surface += $temp->{'surface_relle_bati'};
-        $totalPos++; 
+        $totalPos++;
+
     }
 }
