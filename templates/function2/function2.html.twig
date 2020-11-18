@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="function2_container">
+    <div class="">
         {% if type == "1" %}
-            <div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-            <p>Avec votre budget, vous pouvez avoir une maison d'en moyenne : {{moyenneSurface}}m²</p>
-            <p>Avec une surface de terrain de : {{moyenneTerrain}}m²</p>
+            <p>Avec votre budget, vous pouvez avoir une maison de :</p>
+            <p>{{surfaceMax}}m² avec {{terrain}}m² de terrain</p>
+            <p>{{surface}}m² avec {{terrainMax}}m² de terrain</p>
         {% elseif type == "2"%}
-            <p>Avec votre budget, vous pouvez avoir un appartement d'en moyenne : {{moyenneSurface}}m²</p>
+            <p>Avec votre budget, vous pouvez avoir un appartement de: {{surface}}m²</p>
         {% endif %}
     </div>
 {% endblock %}
