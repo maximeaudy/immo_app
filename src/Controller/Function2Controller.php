@@ -37,7 +37,7 @@ class Function2Controller extends AbstractController
 
             $task = $form->GetData();
             $collection_name = 'code_postal='.$task['code_postal'];
-            $response = $this->get_response($collection_name);
+            $response = $this->get_response($collection_name, $task['type']);
             $resultat = $this->calculResultat($response, $task['budget'], $surface, $terrain, $surfaceMax, $terrainMax, $task['type']);            
             if($resultat == -1){
                 $this->addFlash(
@@ -60,8 +60,13 @@ class Function2Controller extends AbstractController
         ]);
     }
 
-    private function get_response($collection_name){
+    private function get_response($collection_name, $type){
         $url = 'http://api.cquest.org/dvf';
+
+        if ($type == "1") 
+            $collection_name = $collection_name.'&type_local=Maison';
+        else
+            $collection_name = $collection_name.'&type_local=Appartement';
 
         $request_url= $url.'?'.$collection_name;
         $curl = curl_init($request_url);
@@ -72,7 +77,6 @@ class Function2Controller extends AbstractController
         $response = curl_exec($curl);
         curl_close($curl);
         return $response= json_decode($response);
-
     }
 
     private function calculResultat ($response, $budget, &$surface, &$terrain, &$surfaceMax, &$terrainMax, $codeLocal)
@@ -95,7 +99,6 @@ class Function2Controller extends AbstractController
                 if($surfaceMax == 0 && $terrainMax == 0)
                     return -1;
                 return 1;
-
             } 
         }            
         else
@@ -115,7 +118,7 @@ class Function2Controller extends AbstractController
             $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
             $valeur_fonciere = $temp->{'valeur_fonciere'};
             
-            if( $valeur_fonciere < $budget && $temp->{'code_type_local'} == "1" && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0)
+            if( $valeur_fonciere < $budget  && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0)
             {
                 $terrainTmp = $temp->{'surface_terrain'};
                 $surfaceTmp = $temp->{'surface_relle_bati'};
@@ -142,7 +145,7 @@ class Function2Controller extends AbstractController
             $surfaceTotal = $temp->{'surface_relle_bati'};
             $valeur_fonciere = $temp->{'valeur_fonciere'};
             
-            if($valeur_fonciere < $budget && $temp->{'code_type_local'} == "2" && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0
+            if($valeur_fonciere < $budget  && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0
             && $surfaceTotal > $surface)
             {
                 $surface = $surfaceTotal;
