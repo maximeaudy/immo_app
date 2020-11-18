@@ -44,7 +44,7 @@ class Function2Controller extends AbstractController
             $task = $form->GetData();
             $collection_name = 'code_postal='.$task['code_postal'];
             $response = $this->get_response($collection_name);
-            $resultat = $this->calculResultat($response, $task['budget_min'], $task['budget_max'], $moyenneSurface, $moyenneTerrain);            
+            $resultat = $this->calculResultat($response, $task['budget_min'], $task['budget_max'], $moyenneSurface, $moyenneTerrain, "1");            
             
             return $this->render('function2/function2.html.twig', [
                 'moyenneSurface' => $moyenneSurface,
@@ -77,7 +77,7 @@ class Function2Controller extends AbstractController
         {
             for($i=0; $i<$response->{'nb_resultats'}; $i++)
             {
-                $temp = ($this->getInfoSurface($response, $i, $budget_min, $budget_max, $terrain, $surface, $totalPos));
+                $temp = ($this->getInfoSurface($response, $i, $budget_min, $budget_max, $terrain, $surface, $totalPos, $codeLocal));
                     
             }
             if($totalPos==0)
@@ -97,19 +97,17 @@ class Function2Controller extends AbstractController
                 'Vous venez d\'ajouter une intervention'
             );
             return $this->redirectToRoute('function');
-        }           
-
-        
+        }
     }
 
-    private function getInfoSurface($response, $position, $budget_min, $budget_max, &$terrain, &$surface, &$totalPos){
+    private function getInfoSurface($response, $position, $budget_min, $budget_max, &$terrain, &$surface, &$totalPos, $codeLocal){
 
         $temp = $response->{'resultats'}[$position];
         $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
         $valeur_fonciere = $temp->{'valeur_fonciere'};
 
         if($valeur_fonciere < 100 || $valeur_fonciere < $budget_min || $valeur_fonciere > $budget_max
-        || $temp->{'code_type_local'} == 4 || $temp->{'code_type_local'} == null
+        || $temp->{'code_type_local'} != $codeLocal || $temp->{'code_type_local'} == null
         || $surfaceTotal == 0 || $surfaceTotal == null || $temp->{'nombre_lots'} > 0 || $temp->{'surface_relle_bati'} == null || 
         $temp->{'surface_relle_bati'} == 0)
             return -1;
@@ -117,6 +115,5 @@ class Function2Controller extends AbstractController
         $terrain += $temp->{'surface_terrain'};
         $surface += $temp->{'surface_relle_bati'};
         $totalPos++;
-
     }
 }
