@@ -90,7 +90,6 @@ class Function2Controller extends AbstractController
     {
          if ($response->{'nb_resultats'} > 0)
         {            
-            
             $temp = ($this->getInfoSurface($response, $budget_min, $budget_max, $terrain, $surface, $totalPos, $codeLocal));
 
             if($totalPos==0)
@@ -101,6 +100,7 @@ class Function2Controller extends AbstractController
             {
                 $moyenneTerrain = round($terrain/$totalPos,0);
                 $moyenneSurface = round($surface/$totalPos,0);
+                return 1;
             }   
         }            
         else
