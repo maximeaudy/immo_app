@@ -82,8 +82,8 @@ class Function2Controller extends AbstractController
         {      
             if ($codeLocal == "2")
             {
-                $this->getInfoSurfaceAppt($response, $budget, $terrain, $surface, $codeLocal);
-                if($surface==0)
+                $this->getInfoSurfaceAppt($response, $budget, $surface);
+                if($surface == 0)
                 {
                     return -1;
                 }
@@ -91,7 +91,7 @@ class Function2Controller extends AbstractController
             }
             else 
             {
-                $this->getInfoSurfaceMaison($response, $budget, $terrainMax, $surface, $surfaceMax, $terrain, $codeLocal);
+                $this->getInfoSurfaceMaison($response, $budget, $terrainMax, $surface, $surfaceMax, $terrain);
                 if($surfaceMax == 0 && $terrainMax == 0)
                     return -1;
                 return 1;
@@ -104,7 +104,7 @@ class Function2Controller extends AbstractController
         }
     }
 
-    private function getInfoSurfaceMaison($response, $budget, &$terrainMax, &$surface, &$surfaceMax, &$terrain, $codeLocal){
+    private function getInfoSurfaceMaison($response, $budget, &$terrainMax, &$surface, &$surfaceMax, &$terrain){
 
         $terrainMax = 0;
         $surfaceMax = 0;
@@ -115,7 +115,7 @@ class Function2Controller extends AbstractController
             $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
             $valeur_fonciere = $temp->{'valeur_fonciere'};
             
-            if( $valeur_fonciere < $budget && $temp->{'code_type_local'} == $codeLocal && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0)
+            if( $valeur_fonciere < $budget && $temp->{'code_type_local'} == "1" && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0)
             {
                 $terrainTmp = $temp->{'surface_terrain'};
                 $surfaceTmp = $temp->{'surface_relle_bati'};
@@ -130,12 +130,11 @@ class Function2Controller extends AbstractController
                     $terrainMax = $terrainTmp;
                     $surface = $surfaceTmp;
                 }
-
             }            
         }
     }
 
-    private function getInfoSurfaceAppt($response, $budget, &$surface, &$totalPos, $codeLocal){
+    private function getInfoSurfaceAppt($response, $budget, &$surface){
 
         for($position=0; $position < $response->{'nb_resultats'}; $position++)
         {
@@ -143,7 +142,7 @@ class Function2Controller extends AbstractController
             $surfaceTotal = $temp->{'surface_relle_bati'};
             $valeur_fonciere = $temp->{'valeur_fonciere'};
             
-            if($valeur_fonciere < $budget && $temp->{'code_type_local'} == $codeLocal && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0
+            if($valeur_fonciere < $budget && $temp->{'code_type_local'} == "2" && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0
             && $surfaceTotal > $surface)
             {
                 $surface = $surfaceTotal;
