@@ -52,7 +52,14 @@ class Function2Controller extends AbstractController
             $collection_name = 'code_postal='.$task['code_postal'];
             $response = $this->get_response($collection_name);
             $resultat = $this->calculResultat($response, $task['budget_min'], $task['budget_max'], $moyenneSurface, $moyenneTerrain, $task['type']);            
+            if($resultat == null){
+                $this->addFlash(
+                    'notice',
+                    'Aucun resultat trouvé'
+                );
+                return $this->redirectToRoute('function2');
 
+            }
             return $this->render('function2/function2.html.twig', [
                 'type' => $task['type'],
                 'moyenneSurface' => $moyenneSurface,
@@ -88,11 +95,7 @@ class Function2Controller extends AbstractController
 
             if($totalPos==0)
             {
-                $this->addFlash(
-                    'notice',
-                    'Vous venez d\'ajouter une intervention'
-                );
-                return $this->redirectToRoute('function2');           
+                return null;
             }
             else
             {
@@ -102,11 +105,7 @@ class Function2Controller extends AbstractController
         }            
         else
         {
-            $this->addFlash(
-                'notice',
-                'Vous venez d\'ajouter une intervention'
-            );
-            return $this->redirectToRoute('function2');
+            return null;
         }
     }
 
