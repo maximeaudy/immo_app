@@ -92,7 +92,11 @@ class Function2Controller extends AbstractController
         }            
         else
         {
-            function2($request);
+            $this->addFlash(
+                'notice',
+                'Vous venez d\'ajouter une intervention'
+            );
+            return $this->redirectToRoute('function');
         }
             
     
