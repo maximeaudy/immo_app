@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use http\Env\Request;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -15,32 +15,27 @@ class Function2Controller extends AbstractController
     /**
      * @Route("/function2", name="function2")
      */
-    public function function2()
+    public function function2(Request $request)
     {
-
         $form = $this->createFormBuilder()
-        ->add('budget', TextType::class)
-        ->add('code_postal', TextType::class)
-        ->add('code_commune', TextType::class)
-        ->getForm();
+            ->add('budget_max', TextType::class)
+            ->add('budget_min', TextType::class)
+            ->add('code_postal', TextType::class)
+            ->add('code_commune', TextType::class, array('required'=> false))
+            ->getForm();
 
-        $collection_name= 'numero_plan=94068000CQ0110';
-        $response = $this->get_response($collection_name);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
 
-        if()
-        print $this->prix_metre_carre($response);
-        return $this->render('function2/function2.html.twig', [
-
-        ]);
-    }
-
-    /**
-     * @Route("/newfunction2", name="function2")
-     */
-    public function new()
-    {
-        
-
+            $task = $form->GetData();
+            $collection_name = 'code_postal='.$task['code_postal'];
+            $response = $this->get_response($collection_name);
+            $this->fourchette($response, $task['budget_min'], $task['budget_max']);            
+            
+            return $this->render('function2/function2.html.twig', [
+                
+            ]);
+        }
         return $this->render('function2/task/newfunction2task.html.twig',[
             'form'=>$form->createView()
         ]);
@@ -61,13 +56,41 @@ class Function2Controller extends AbstractController
 
     }
 
-    private function prix_metre_carre($response){
-        $surface = $response->{'resultats'}[0]->{'surface_terrain'};
-        $valeur_fonciere = $response->{'resultats'}[0]->{'valeur_fonciere'};
-        if ($surface == 0){
-            $surface = $surface = $response->{'resultats'}[0]->{'surface_relle_bati'};
+    private function fourchette ($response, $budget_min, $budget_max)
+    {
+        $min = 60000;
+
+        for($i=0; $i<$response->{'nb_resultats'}; $i++)
+        {
+            $temp = ($this->getInfoSurface($response, $i, $budget_min, $budget_max, $terrain, $surface, $totalPos));
+                
         }
-        $prix_metre_carre = round($valeur_fonciere/$surface,3);
-        return $prix_metre_carre;
+        $moyenneTerrain = round($terrain/$totalPos,0);
+        $moyenneSurface = round($surface/$totalPos,0);
+
+        $this-> printResultat($moyenneSurface, $moyenneTerrain);
+    }
+
+    private function printResultat ($moyenneSurface, $moyenneTerrain)
+    {
+        print "La surface pour votre budget est d'en moyenne : ".$moyenneSurface."m² avec une surface de terrain de : ".$moyenneTerrain."m²";
+    }
+
+
+    private function getInfoSurface($response, $position, $budget_min, $budget_max, &$terrain, &$surface, &$totalPos){
+        $temp = $response->{'resultats'}[$position];
+        $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
+        $valeur_fonciere = $temp->{'valeur_fonciere'};
+
+        if($valeur_fonciere < $budget_min || $valeur_fonciere > $budget_max|| $temp->{'code_type_local'} == 4 || $temp->{'code_type_local'} == null
+        || $surfaceTotal == 0 || $surfaceTotal == null || $temp->{'nombre_lots'} > 0 || $temp->{'surface_relle_bati'} == null || 
+        $temp->{'surface_relle_bati'} == 0)
+            return -1;
+
+        $terrain += $temp->{'surface_terrain'};
+        $surface += $temp->{'surface_relle_bati'};
+        $totalPos++; 
+
+        return $prix;
     }
 }
