@@ -30,7 +30,7 @@ class Function2Controller extends AbstractController
             $task = $form->GetData();
             $collection_name = 'code_postal='.$task['code_postal'];
             $response = $this->get_response($collection_name, $task['type']);
-            $resultat = $this->calculResultat($response, $task['budget'], $surface, $terrain, $surfaceMax, $terrainMax, $task['type']);            
+            $resultat = $this->calculResultat($response, $task['budget'], $surface, $terrain, $surfaceMax, $terrainMax, $task['type'], $nbpiece);            
             if($resultat == -1){
                 $this->addFlash(
                     'notice',
@@ -73,14 +73,14 @@ class Function2Controller extends AbstractController
         return $response= json_decode($response);
     }
 
-    private function calculResultat ($response, $budget, &$surface, &$terrain, &$surfaceMax, &$terrainMax, $codeLocal)
+    private function calculResultat ($response, $budget, &$surface, &$terrain, &$surfaceMax, &$terrainMax, $codeLocal, &$nbpiece)
     {
         $surface = 0;
          if ($response->{'nb_resultats'} > 0)
         {      
             if ($codeLocal == "2")
             {
-                $this->getInfoSurfaceAppt($response, $budget, $surface);
+                $this->getInfoSurfaceAppt($response, $budget, $surface, $nbpiece);
                 if($surface == 0)
                 {
                     return -1;
@@ -132,17 +132,19 @@ class Function2Controller extends AbstractController
         }
     }
 
-    private function getInfoSurfaceAppt($response, $budget, &$surface){
+    private function getInfoSurfaceAppt($response, $budget, &$surface, &$nbpiece){
 
         for($position=0; $position < $response->{'nb_resultats'}; $position++)
         {
             $temp = $response->{'resultats'}[$position];
             $surfaceTotal = $temp->{'surface_relle_bati'};
             $valeur_fonciere = $temp->{'valeur_fonciere'};
+            $tempPiece = $temp->{'nombre_pieces_principales'};
 
-            if($valeur_fonciere > self::MIN_BUDGET && $valeur_fonciere < $budget  && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0 && $surfaceTotal > $surface)
+            if($tempPiece > 0 && $valeur_fonciere > self::MIN_BUDGET && $valeur_fonciere < $budget  && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0 && $surfaceTotal > $surface)
             {
                 $surface = $surfaceTotal;
+                $nbpiece = $temp->{'nombre_pieces_principales'};
             }            
         }
     }
