@@ -1,0 +1,15 @@
+html, body {
+    height: 100%;
+    border-collapse: collapse;
+    overflow-x: hidden;
+    background-color: #F9FCFF;
+}
+
+#nav_fct {
+    background-color: #77B0E8;
+    transition: transform 250ms;
+}
+
+#nav_fct :hover {
+    background-color: #4AA1F6;
+}
