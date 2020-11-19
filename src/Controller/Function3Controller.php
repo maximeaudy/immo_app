@@ -2,24 +2,19 @@
 // TODO : position automatique
 namespace App\Controller;
 
-use Doctrine\Common\Collections\Expr\Value;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\Extension\Core\Type\RangeType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Phpml\Regression\SVR;
+use Phpml\SupportVectorMachine\Kernel;
 
 class Function3Controller extends AbstractController {
     /**
-     * @Route("/pres-de-chez-moi", name="function3")
+     * @Route("/pres-de-chez-moi", name="pres-de-chez-moi")
      */
     public function function3(Request $request)
     { 
-        //Initialisation des données de test
-        $latitude = '44.711836';
-        $longitude = '-0.480107';
-        $dist = '100';
-
         $error = "";
 
         //Création du formulaire
@@ -47,6 +42,8 @@ class Function3Controller extends AbstractController {
                 $error = "Aucune correspondance trouvée";
             }
 
+            $prixMetreCarreArray = [];
+
             //Vérifications des données
             $indice = 0;
             foreach ($responseDecode as $feature) {
@@ -54,19 +51,46 @@ class Function3Controller extends AbstractController {
                     $responseDecode[$indice]['properties']['numero_voie'] = "";
                 }
                 if (!array_key_exists('surface_relle_bati', $feature['properties'])) {
-                    $responseDecode[$indice]['properties']['surface_relle_bati'] = $feature['properties']['surface_terrain'];
+                    if (array_key_exists('surface_terrain', $feature['properties'])) {
+                        $responseDecode[$indice]['properties']['surface_relle_bati'] = $feature['properties']['surface_terrain'];
+                    } else if (array_key_exists('surface_lot_1', $feature['properties'])) {
+                        $responseDecode[$indice]['properties']['surface_relle_bati'] = $feature['properties']['surface_lot_1'];
+                    } else {
+                        $responseDecode[$indice]['properties']['surface_relle_bati'] = '0';
+                    }
                 }
                 if (!array_key_exists('nombre_pieces_principales', $feature['properties'])) {
                     $responseDecode[$indice]['properties']['nombre_pieces_principales'] = 'Aucune';
                 }
+                if (!array_key_exists('type_voie', $feature['properties'])) {
+                    $responseDecode[$indice]['properties']['type_voie'] = '';
+                }
+                if (!array_key_exists('voie', $feature['properties'])) {
+                    $responseDecode[$indice]['properties']['voie'] = '';
+                }
+                if (!array_key_exists('code_postal', $feature['properties'])) {
+                    $responseDecode[$indice]['properties']['code_postal'] = '';
+                }
+
+                if($responseDecode[$indice]['properties']['surface_relle_bati'] != 0 && array_key_exists('valeur_fonciere', $feature['properties']) && $responseDecode[$indice]['properties']['valeur_fonciere'] != 0) {
+                    $prixMetreCarreArray[$indice]=$responseDecode[$indice]['properties']['valeur_fonciere']/$responseDecode[$indice]['properties']['surface_relle_bati'];
+                }
+
+                if (!array_key_exists('valeur_fonciere', $feature['properties'])) {
+                    $responseDecode[$indice]['properties']['valeur_fonciere'] = '0';
+                }
+
                 $indice++;
             }
+
+            $prixMetreCarreArraySum=array_sum($prixMetreCarreArray);
 
             //Render
             return $this->render('function3/function3Recherche.html.twig', [
                 'form' => $form->createView(),
                 'response' => $responseDecode,
-                'error' => $error
+                'error' => $error,
+                'estimationPrixCarre' => round($prixMetreCarreArraySum)
             ]);
         }
 

@@ -1,39 +1,25 @@
 {% include 'function3/function3.html.twig' %}
-<!-- TODO redesign des cartes-->
-<div class="cards">
-    {% for feature in response %}
-    <article class="card">
-        <header>
-            <p>{{ feature.properties.numero_voie }} {{ feature.properties.voie }}</p>
-            <p>{{ feature.properties.code_postal }}</p>
-            <p>{{ feature.properties.commune }}</p>
-        </header>
-        <div class="content">
-            <p> {{feature.properties.nature_mutation }} le {{ feature.properties.date_mutation }} pour {{ feature.properties.valeur_fonciere }} €</p>
-            <p> {{feature.properties.nombre_pieces_principales }} pièce(s) avec une surface de {{ feature.properties.surface_relle_bati }} m²</p>
-        </div>
-    </article>
-    {% endfor %}
-    <p id="error">{{ error }}</p>
+{% if response|length == 0 %}
+<div class="alert alert-danger w-25 ml-5" role="alert">
+    {{ error }}
 </div>
-
-<style>
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    grid-gap: 20px;
-    margin-top 2em;
-}
-
-.card {
-    display: grid;
-    grid-template-rows: max-content 200px 1fr;
-    margin: 1em;
-    border: 1px solid black;
-    padding: 1em;
-}
-#error {
-    color:red;
-    font-weight: bold;
-}
-</style>
+{% endif %}
+<div class="alert alert-info w-25 ml-5" role="alert">
+    <p>Prix estimé au mètre carré : {{estimationPrixCarre}} €</p>
+    <p>Nombre d'offres recueillies : {{ response|length }}</p>
+</div>
+<div class="row row-cols-1 row-cols-md-2 row-cols-md-3 row-cols-md-4 cardsFunction3">
+    {% for feature in response %}
+    <div class="col mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ feature.properties.numero_voie }} {{ feature.properties.type_voie }} {{ feature.properties.voie }}</h5>
+                <h5 class="card-title">{{ feature.properties.code_postal }}</h5>
+                <h5 class="card-title">{{ feature.properties.commune }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{feature.properties.nature_mutation }} le {{ feature.properties.date_mutation }} pour {{ feature.properties.valeur_fonciere }} €</h6>
+                <p class="card-text">{{feature.properties.nombre_pieces_principales }} pièce(s) avec une surface de {{ feature.properties.surface_relle_bati }} m²</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
