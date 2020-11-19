@@ -2,62 +2,58 @@
 
 namespace App\Controller;
 
+use App\Form\Type\Function2Type;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+
 
 class Function2Controller extends AbstractController
 {
+    const MIN_BUDGET = 5000;
     /**
      * @Route("/function2", name="function2")
      */
     public function function2(Request $request)
     {
-        $form = $this->createFormBuilder(null,[
-            'constraints' => [
-                new Assert\Callback(
-                    ['callback' => static function (array $data, ExecutionContextInterface $context){
-                        if ($data['budget_max']<= $data['budget_min']){
-                            $context
-                                ->buildViolation("Veuillez entrer un budget max supérieur au budget min")
-                                ->addViolation()
-                            ;
-                        }
-                    }]
-                )
-            ]])
-            ->add('budget_max', IntegerType::class)
-            ->add('budget_min', IntegerType::class)
-            ->add('code_postal', IntegerType::class)
-            ->getForm();
-
+        $form = $this->createForm(Function2Type::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
             $task = $form->GetData();
             $collection_name = 'code_postal='.$task['code_postal'];
-            $response = $this->get_response($collection_name);
-            $resultat = $this->calculResultat($response, $task['budget_min'], $task['budget_max'], $moyenneSurface, $moyenneTerrain);            
-            
-            return $this->render('function2/function2.html.twig', [
-                'moyenneSurface' => $moyenneSurface,
-                'moyenneTerrain' => $moyenneTerrain
-            ]);
+            $response = $this->get_response($collection_name, $task['type']);
+            $resultat = $this->calculResultat($response, $task['budget'], $surface, $terrain, $surfaceMax, $terrainMax, $task['type'], $nbpiece);            
+            if($resultat == -1){
+                $this->addFlash(
+                    'notice',
+                    'Aucun resultat trouvé'
+                );
+                $task = null;
+            }
+            if($surface == $surfaceMax){
+                $surface = null;
+                $terrainMax = null;
+            }
         }
-        return $this->render('function2/task/newfunction2task.html.twig',[
-            'form'=>$form->createView()
+        return $this->render('function2/function2.html.twig', [
+            'type' => $task['type'] ?? null ,
+            'surface' => $surface ?? null,
+            'terrain' => $terrain ?? null,
+            'surfaceMax' => $surfaceMax ?? null,
+            'terrainMax' => $terrainMax ?? null,
+            'nbpiece' => $nbpiece ?? null,
+            'form' => $form->createView()
         ]);
     }
 
-    private function get_response($collection_name){
+    private function get_response($collection_name, $type){
         $url = 'http://api.cquest.org/dvf';
+
+        if ($type == "1") 
+            $collection_name = $collection_name.'&type_local=Maison';
+        else
+            $collection_name = $collection_name.'&type_local=Appartement';
 
         $request_url= $url.'?'.$collection_name;
         $curl = curl_init($request_url);
@@ -68,55 +64,81 @@ class Function2Controller extends AbstractController
         $response = curl_exec($curl);
         curl_close($curl);
         return $response= json_decode($response);
-
     }
 
-    private function calculResultat ($response, $budget_min, $budget_max, &$moyenneSurface, &$moyenneTerrain)
+    private function calculResultat ($response, $budget, &$surface, &$terrain, &$surfaceMax, &$terrainMax, $codeLocal, &$nbpiece)
     {
+        $surface = 0;
          if ($response->{'nb_resultats'} > 0)
-        {
-            for($i=0; $i<$response->{'nb_resultats'}; $i++)
+        {      
+            if ($codeLocal == "2")
             {
-                $temp = ($this->getInfoSurface($response, $i, $budget_min, $budget_max, $terrain, $surface, $totalPos));
-                    
+                $this->getInfoSurfaceAppt($response, $budget, $surface, $nbpiece);
+                if($surface == 0)
+                {
+                    return -1;
+                }
+                return 1;
             }
-            if($totalPos==0)
+            else 
             {
-                //function2($request);            
-            }
-            else
-            {
-                $moyenneTerrain = round($terrain/$totalPos,0);
-                $moyenneSurface = round($surface/$totalPos,0);
-            }   
+                $this->getInfoSurfaceMaison($response, $budget, $terrainMax, $surface, $surfaceMax, $terrain);
+                if($surfaceMax == 0 && $terrainMax == 0)
+                    return -1;
+                return 1;
+            } 
         }            
         else
         {
-            $this->addFlash(
-                'notice',
-                'Vous venez d\'ajouter une intervention'
-            );
-            return $this->redirectToRoute('function');
+            return -1;
         }
-            
-    
     }
 
-    private function getInfoSurface($response, $position, $budget_min, $budget_max, &$terrain, &$surface, &$totalPos){
+    private function getInfoSurfaceMaison($response, $budget, &$terrainMax, &$surface, &$surfaceMax, &$terrain){
 
-        $temp = $response->{'resultats'}[$position];
-        $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
-        $valeur_fonciere = $temp->{'valeur_fonciere'};
+        $terrainMax = 0;
+        $surfaceMax = 0;
 
-        if($valeur_fonciere < 100 || $valeur_fonciere < $budget_min || $valeur_fonciere > $budget_max
-        || $temp->{'code_type_local'} == 4 || $temp->{'code_type_local'} == null
-        || $surfaceTotal == 0 || $surfaceTotal == null || $temp->{'nombre_lots'} > 0 || $temp->{'surface_relle_bati'} == null || 
-        $temp->{'surface_relle_bati'} == 0)
-            return -1;
+        for($position=0; $position < $response->{'nb_resultats'}; $position++)
+        {
+            $temp = $response->{'resultats'}[$position];
+            $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
+            $valeur_fonciere = $temp->{'valeur_fonciere'};
+            
+            if( $valeur_fonciere > self::MIN_BUDGET && $valeur_fonciere < $budget  && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0 && str_starts_with($temp->{'date_mutation'},'2019') or  str_starts_with($temp->{'date_mutation'},'2020'))
 
-        $terrain += $temp->{'surface_terrain'};
-        $surface += $temp->{'surface_relle_bati'};
-        $totalPos++;
+            {
+                $terrainTmp = $temp->{'surface_terrain'};
+                $surfaceTmp = $temp->{'surface_relle_bati'};
 
+                if ($surfaceTmp > $surfaceMax )
+                {
+                    $surfaceMax = $surfaceTmp;
+                    $terrain = $terrainTmp;
+                }
+                if ($terrainTmp > $terrainMax)
+                {
+                    $terrainMax = $terrainTmp;
+                    $surface = $surfaceTmp;
+                }
+            }            
+        }
+    }
+
+    private function getInfoSurfaceAppt($response, $budget, &$surface, &$nbpiece){
+
+        for($position=0; $position < $response->{'nb_resultats'}; $position++)
+        {
+            $temp = $response->{'resultats'}[$position];
+            $surfaceTotal = $temp->{'surface_relle_bati'};
+            $valeur_fonciere = $temp->{'valeur_fonciere'};
+            $tempPiece = $temp->{'nombre_pieces_principales'};
+
+            if($tempPiece > 0 && $valeur_fonciere > self::MIN_BUDGET && $valeur_fonciere < $budget  && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0 && $surfaceTotal > $surface)
+            {
+                $surface = $surfaceTotal;
+                $nbpiece = $temp->{'nombre_pieces_principales'};
+            }            
+        }
     }
 }
