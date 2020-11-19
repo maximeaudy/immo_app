@@ -29,6 +29,7 @@ class EstimateController extends AbstractController
 
     /**
      * @Route("/estimate", name="estimate")
+     * @Route("/")
      */
     public function index(Request $request): Response
     {
