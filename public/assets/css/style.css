@@ -113,6 +113,16 @@ input::-webkit-inner-spin-button {
     text-align: center;
     margin-bottom: 50px;
 }
-.function2_container{
+.image_function2{
+    width: 400px;
+    height: auto;
+    margin-left: auto;
+    display: block;
+}
 
+.text_fonction2{
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    display: block;
 }

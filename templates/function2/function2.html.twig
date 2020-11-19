@@ -1,7 +1,16 @@
 {% extends 'base.html.twig' %}
+{% block title %}Estimation de surface{% endblock %}
 
 {% block body %}
-    <div class="">
+<div class="row">
+    <div class="col">
+        {% if type == "1" %}
+            <img class="image_function2" src="{{'assets/image/maison.png'}}">
+        {% elseif type == "2"%}
+            <img class="image_function2" src="{{'assets/image/appartement.png'}}">
+        {% endif %}
+    </div>
+    <div class="col text_fonction2">
         {% if type == "1" %}
             <p>Avec votre budget, vous pouvez avoir une maison de :</p>
             <p>{{surfaceMax}}m² avec {{terrain}}m² de terrain</p>
@@ -10,5 +19,5 @@
             <p>Avec votre budget, vous pouvez avoir un appartement de: {{surface}}m²</p>
         {% endif %}
     </div>
+</div>
 {% endblock %}
-
