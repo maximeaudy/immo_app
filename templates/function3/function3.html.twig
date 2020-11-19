@@ -2,15 +2,18 @@
 
 {% block body %}
     <div id="bodyFunction3">
-	    <h1>Près de chez moi :</h1>
-	    <p><a href="https://www.coordonnees-gps.fr/">Trouver mes coordonnées GPS</a></p>
-	    <div class="formFunction3">
-	        {{ form_start(form) }}
-	            <td class="col-sm">Latitude : {{ form_widget(form.latitude) }}</td>
-	            <td class="col-sm">Longitude : {{form_widget(form.longitude)}}</td>
-	            <td class="col-sm">Distance (en m) : {{form_widget(form.distance)}}</td>
-	            <button type="submit" class="btn btn-success" >Rechercher</button>
-	        {{ form_end(form) }}
-        </div>
+		{{ form_start(form) }}
+			<div class="formFunction3">
+					<td class="col-sm">Latitude : {{ form_widget(form.latitude) }}</td>
+					<td class="col-sm">Longitude : {{form_widget(form.longitude)}}</td>
+					<td class="col-sm">Distance (en m) : {{form_widget(form.distance)}}</td>
+			</div>
+			<p>
+				<a href="#" onclick="window.open('https://www.coordonnees-gps.fr/', 'popupwindow', 'width=500,height=500,scrollbars,resizable'); return false;">
+					Trouver mes coordonnées GPS
+				</a>
+			</p>
+			<button type="submit" class="btn btn-primary" >Rechercher</button>
+		{{ form_end(form) }}
     </div>
 {% endblock %}
