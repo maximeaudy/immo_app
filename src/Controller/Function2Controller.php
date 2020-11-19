@@ -17,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 class Function2Controller extends AbstractController
 {
+    const MIN_BUDGET = 5000;
     /**
      * @Route("/function2", name="function2")
      */
@@ -110,7 +111,7 @@ class Function2Controller extends AbstractController
             $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
             $valeur_fonciere = $temp->{'valeur_fonciere'};
             
-            if( $valeur_fonciere > 1000 && $valeur_fonciere < $budget  && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0)
+            if( $valeur_fonciere > self::MIN_BUDGET && $valeur_fonciere < $budget  && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0)
 
             {
                 $terrainTmp = $temp->{'surface_terrain'};
@@ -138,9 +139,7 @@ class Function2Controller extends AbstractController
             $surfaceTotal = $temp->{'surface_relle_bati'};
             $valeur_fonciere = $temp->{'valeur_fonciere'};
 
-            if($valeur_fonciere>1000 && $valeur_fonciere < $budget  && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0
-
-            && $surfaceTotal > $surface)
+            if($valeur_fonciere > self::MIN_BUDGET && $valeur_fonciere < $budget  && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0 && $surfaceTotal > $surface)
             {
                 $surface = $surfaceTotal;
             }            
