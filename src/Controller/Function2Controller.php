@@ -3,17 +3,10 @@
 namespace App\Controller;
 
 use App\Form\Type\Function2Type;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+
 
 class Function2Controller extends AbstractController
 {
@@ -43,7 +36,7 @@ class Function2Controller extends AbstractController
                 $terrainMax = null;
             }
         }
-        return $this->render('function2/task/newfunction2task.html.twig', [
+        return $this->render('function2/function2.html.twig', [
             'type' => $task['type'] ?? null ,
             'surface' => $surface ?? null,
             'terrain' => $terrain ?? null,
@@ -112,7 +105,7 @@ class Function2Controller extends AbstractController
             $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
             $valeur_fonciere = $temp->{'valeur_fonciere'};
             
-            if( $valeur_fonciere > self::MIN_BUDGET && $valeur_fonciere < $budget  && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0)
+            if( $valeur_fonciere > self::MIN_BUDGET && $valeur_fonciere < $budget  && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0 && str_starts_with($temp->{'date_mutation'},'2019') or  str_starts_with($temp->{'date_mutation'},'2020'))
 
             {
                 $terrainTmp = $temp->{'surface_terrain'};
