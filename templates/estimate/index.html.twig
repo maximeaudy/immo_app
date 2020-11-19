@@ -25,7 +25,7 @@
         </div>
     </div>
     <div class="row mb-3">
-        <div class="col-4">
+        <div class="col-4" id="surface">
             {{ form_row(estimatePriceForm.surface) }}
         </div>
         <div class="col-4">
@@ -51,10 +51,17 @@
             {{ form_row(estimatePriceForm.travaux) }}
         </div>
     </div>
+    {% if anError == true %}
+        <div class="alert alert-danger" role="alert">
+            Nous n'avons pas assez de réusltats pour affiner la recherche avec vos critères
+        </div>
+    {% endif %}
     <div class="col mb-3">
         {{ form_widget(estimatePriceForm.save, {'attr': {'class': 'btn btn-primary btn-lg btn-block'}}) }}
     </div>
     {{ form_end(estimatePriceForm) }}
+
+
 
     <div class="row d-flex justify-content-between mt-5">
         <div class="border border-primary rounded text-center p-2">
@@ -76,4 +83,7 @@
     </div>
 
 </div>
+
 {% endblock %}
+
+
