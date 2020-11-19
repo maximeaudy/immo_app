@@ -118,7 +118,7 @@ class Function2Controller extends AbstractController
             $surfaceTotal = $temp->{'surface_terrain'} + $temp->{'surface_relle_bati'};
             $valeur_fonciere = $temp->{'valeur_fonciere'};
             
-            if( $valeur_fonciere < $budget  && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0)
+            if( $valeur_fonciere > 1000 && $valeur_fonciere < $budget  && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0)
             {
                 $terrainTmp = $temp->{'surface_terrain'};
                 $surfaceTmp = $temp->{'surface_relle_bati'};
@@ -145,7 +145,7 @@ class Function2Controller extends AbstractController
             $surfaceTotal = $temp->{'surface_relle_bati'};
             $valeur_fonciere = $temp->{'valeur_fonciere'};
             
-            if($valeur_fonciere < $budget  && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0
+            if($valeur_fonciere>1000 && $valeur_fonciere < $budget  && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0
             && $surfaceTotal > $surface)
             {
                 $surface = $surfaceTotal;
