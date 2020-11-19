@@ -6,8 +6,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Phpml\Regression\SVR;
-use Phpml\SupportVectorMachine\Kernel;
 
 class Function3Controller extends AbstractController {
     /**
@@ -47,9 +45,12 @@ class Function3Controller extends AbstractController {
             //Vérifications des données
             $indice = 0;
             foreach ($responseDecode as $feature) {
-                if (!array_key_exists('numero_voie', $feature['properties'])) {
-                    $responseDecode[$indice]['properties']['numero_voie'] = "";
+                if (array_key_exists('surface_terrain', $feature['properties']) && array_key_exists('valeur_fonciere', $feature['properties'])) {
+                    if($responseDecode[$indice]['properties']['surface_terrain'] != 0 && $responseDecode[$indice]['properties']['valeur_fonciere'] != 0) {
+                        $prixMetreCarreArray[$indice]=$responseDecode[$indice]['properties']['valeur_fonciere']/$responseDecode[$indice]['properties']['surface_terrain'];
+                    }
                 }
+                
                 if (!array_key_exists('surface_relle_bati', $feature['properties'])) {
                     if (array_key_exists('surface_terrain', $feature['properties'])) {
                         $responseDecode[$indice]['properties']['surface_relle_bati'] = $feature['properties']['surface_terrain'];
@@ -62,6 +63,9 @@ class Function3Controller extends AbstractController {
                 if (!array_key_exists('nombre_pieces_principales', $feature['properties'])) {
                     $responseDecode[$indice]['properties']['nombre_pieces_principales'] = 'Aucune';
                 }
+                if (!array_key_exists('numero_voie', $feature['properties'])) {
+                    $responseDecode[$indice]['properties']['numero_voie'] = "";
+                }
                 if (!array_key_exists('type_voie', $feature['properties'])) {
                     $responseDecode[$indice]['properties']['type_voie'] = '';
                 }
@@ -70,10 +74,6 @@ class Function3Controller extends AbstractController {
                 }
                 if (!array_key_exists('code_postal', $feature['properties'])) {
                     $responseDecode[$indice]['properties']['code_postal'] = '';
-                }
-
-                if($responseDecode[$indice]['properties']['surface_relle_bati'] != 0 && array_key_exists('valeur_fonciere', $feature['properties']) && $responseDecode[$indice]['properties']['valeur_fonciere'] != 0) {
-                    $prixMetreCarreArray[$indice]=$responseDecode[$indice]['properties']['valeur_fonciere']/$responseDecode[$indice]['properties']['surface_relle_bati'];
                 }
 
                 if (!array_key_exists('valeur_fonciere', $feature['properties'])) {
@@ -85,7 +85,7 @@ class Function3Controller extends AbstractController {
 
             $prixMetreCarreArraySum=array_sum($prixMetreCarreArray);
 
-            //Render
+            //Render Recherche
             return $this->render('function3/function3Recherche.html.twig', [
                 'form' => $form->createView(),
                 'response' => $responseDecode,
@@ -94,6 +94,7 @@ class Function3Controller extends AbstractController {
             ]);
         }
 
+        //Render formulaire
         return $this->render('function3/function3.html.twig', [
             'form' => $form->createView(),
         ]);

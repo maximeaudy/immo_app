@@ -110,6 +110,7 @@ input::-webkit-inner-spin-button {
 /*Function 3*/
 #bodyFunction3 {
     padding: 2em;
+    text-align: center;
 }
 .cardsFunction3 {
     margin: 2em;
@@ -128,4 +129,9 @@ input::-webkit-inner-spin-button {
     width: 10%;
     margin : 1em;
     display: inline-block !important;
+}
+
+.alertBoxF3 {
+    margin: auto;
+    margin-bottom: 2em;
 }
