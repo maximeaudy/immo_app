@@ -48,6 +48,7 @@ class EstimateController extends AbstractController
             $shops = $data['shops'];
             $section = $data['section'];
             $travaux = $data['travaux'];
+            $anError = null;
 
             if($type == 1){
                 $typeString = "Maison";
@@ -74,7 +75,7 @@ class EstimateController extends AbstractController
             $response = json_decode($response, true);
 
             if(is_null($response['resultats'])){
-                var_dump('aucun resultat');die;
+                $anError = true;
             }
 
             $delta = null;
@@ -92,27 +93,30 @@ class EstimateController extends AbstractController
             $tab_2019_all_price = [];
             $price_average_2018 = 0;
             $price_average_2019 = 0;
-
-            foreach ($response['resultats'] as $propertySale){
-                $date = explode("-", $propertySale['date_mutation']);
-                if(($propertySale['surface_relle_bati'] <= $area + $delta || is_null($area)) &&
-                    ($propertySale['surface_relle_bati'] >= $area - $delta || is_null($area)) &&
-                    ((int)$date[0] >= (int)"2018") &&
-                    ($propertySale['surface_terrain'] == $surface || is_null($surface)) &&
-                    ($propertySale['nombre_pieces_principales'] == $numberRoom || is_null($numberRoom))&&
-                    ($propertySale['code_type_local'] == $type || is_null($type)) &&
-                    ($propertySale['section'] == $section || is_null($section))) {
-                    $total_property++;
-                    $tab_all_price[] = $propertySale['valeur_fonciere'];
-                    if ($date[0] === "2018")  {
-                        $total_property2018++;
-                        $tab_2018_all_price[] = $propertySale['valeur_fonciere'];
-                    } else if ($date[0] === "2019") {
-                        $total_property2019++;
-                        $tab_2019_all_price[] = $propertySale['valeur_fonciere'];
+            if (!empty($response['resultats'])) {
+                foreach ($response['resultats'] as $propertySale){
+                    $date = explode("-", $propertySale['date_mutation']);
+                    if(($propertySale['surface_relle_bati'] <= $area + $delta || is_null($area)) &&
+                        ($propertySale['surface_relle_bati'] >= $area - $delta || is_null($area)) &&
+                        ($propertySale['surface_terrain'] >= $surface - $delta || is_null($surface)) &&
+                        ($propertySale['surface_terrain'] >= $surface - $delta || is_null($surface)) &&
+                        ((int)$date[0] >= (int)"2018") &&
+                        ($propertySale['nombre_pieces_principales'] == $numberRoom || is_null($numberRoom))&&
+                        ($propertySale['code_type_local'] == $type || is_null($type)) &&
+                        ($propertySale['section'] == $section || is_null($section))) {
+                        $total_property++;
+                        $tab_all_price[] = $propertySale['valeur_fonciere'];
+                        if ($date[0] === "2018")  {
+                            $total_property2018++;
+                            $tab_2018_all_price[] = $propertySale['valeur_fonciere'];
+                        } else if ($date[0] === "2019") {
+                            $total_property2019++;
+                            $tab_2019_all_price[] = $propertySale['valeur_fonciere'];
+                        }
                     }
                 }
             }
+
 
             $augmentation = null;
             if (!empty($tab_2018_all_price) && !empty($tab_2019_all_price)) {
@@ -123,22 +127,18 @@ class EstimateController extends AbstractController
                 $augmentation = $price_average_2019 / $price_average_2018;
             }
 
-
             if($total_property == 0){
-                var_dump('aucun resultat correspondant à votre recherche');die;
+                $anError = true;
             }
             sort($tab_all_price);
             $price = $this->array_median($tab_all_price);
 
-            if ($augmentation != null) {
-                $estimation_2_years_later = $price * $augmentation;
-            }
 
             if($modern){
-                $price = $price * 1.10;
+                $price = $price * 1.05;
             }
             if($transport){
-                $price = $price * 1.03;
+                $price = $price * 1.01;
             }
             if($shops){
                 $price = $price * 1.01;
@@ -146,11 +146,17 @@ class EstimateController extends AbstractController
             if($travaux){
                 $price = $price * 0.90;
             }
+
+            if ($augmentation != null) {
+                $estimation_2_years_later = $price * $augmentation;
+                $estimation_2_years_later = round($estimation_2_years_later, 0);
+            }
         }
 
 
         return $this->render('estimate/index.html.twig', [
             'estimatePriceForm' => $form->createView(),
+            'anError' => $anError ?? null,
             'estimatePrice' => $price ?? null,
             'estimatePrice2years' => $estimation_2_years_later ?? null,
         ]);
