@@ -109,10 +109,21 @@ input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
 .function2_h1{
     text-align: center;
     margin-bottom: 50px;
 }
-.function2_container{
+.image_function2{
+    width: 300px;
+    height: auto;
+    margin-left: auto;
+    display: block;
+}
 
+.text_fonction2{
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: auto;
+    display: block;
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\Type\Function2Type;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,17 +22,7 @@ class Function2Controller extends AbstractController
      */
     public function function2(Request $request)
     {
-        $form = $this->createFormBuilder()
-            ->add('budget', IntegerType::class)
-            ->add('code_postal', IntegerType::class)
-            ->add('type',ChoiceType::class,[
-                'choices' =>[
-                    'Appartement' => '2',
-                    'Maison' => '1'
-                ]
-            ])
-            ->getForm();
-
+        $form = $this->createForm(Function2Type::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
@@ -44,19 +35,20 @@ class Function2Controller extends AbstractController
                     'notice',
                     'Aucun resultat trouvé'
                 );
-                return $this->redirectToRoute('function2');
-
+                $task = null;
             }
-            return $this->render('function2/function2.html.twig', [
-                'type' => $task['type'],
-                'surface' => $surface,
-                'terrain' => $terrain,
-                'surfaceMax' => $surfaceMax,
-                'terrainMax' => $terrainMax
-            ]);
+            if($surface == $surfaceMax){
+                $surface = null;
+                $terrainMax = null;
+            }
         }
-        return $this->render('function2/task/newfunction2task.html.twig',[
-            'form'=>$form->createView()
+        return $this->render('function2/task/newfunction2task.html.twig', [
+            'type' => $task['type'] ?? null ,
+            'surface' => $surface ?? null,
+            'terrain' => $terrain ?? null,
+            'surfaceMax' => $surfaceMax ?? null,
+            'terrainMax' => $terrainMax ?? null,
+            'form' => $form->createView()
         ]);
     }
 
@@ -119,6 +111,7 @@ class Function2Controller extends AbstractController
             $valeur_fonciere = $temp->{'valeur_fonciere'};
             
             if( $valeur_fonciere > 1000 && $valeur_fonciere < $budget  && $temp->{'nombre_lots'} == 0 && $temp->{'surface_relle_bati'} > 0)
+
             {
                 $terrainTmp = $temp->{'surface_terrain'};
                 $surfaceTmp = $temp->{'surface_relle_bati'};
@@ -144,8 +137,9 @@ class Function2Controller extends AbstractController
             $temp = $response->{'resultats'}[$position];
             $surfaceTotal = $temp->{'surface_relle_bati'};
             $valeur_fonciere = $temp->{'valeur_fonciere'};
-            
+
             if($valeur_fonciere>1000 && $valeur_fonciere < $budget  && $surfaceTotal > 0 && $temp->{'nombre_lots'} == 0
+
             && $surfaceTotal > $surface)
             {
                 $surface = $surfaceTotal;

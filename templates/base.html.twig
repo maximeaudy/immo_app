@@ -6,9 +6,27 @@
         {% block stylesheets %}
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
             <link href="{{ asset('assets/css/style.css') }}" type="text/css" rel="stylesheet" />
+            <link href="{{ asset('assets/css/all.css') }}" type="text/css" rel="stylesheet" />
         {% endblock %}
     </head>
     <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding: 0; margin: 0;">
+            <div class="col-4 border text-center" id="nav_fct" style="padding: 0; margin: 0;">
+                <div class="pt-4 pb-4" onclick="location.href='{{ path('estimate') }}';">
+                    <h3>Estimer son bien</h3>
+                </div>
+            </div>
+            <div class="col-4 border text-center" id="nav_fct" style="padding: 0; margin: 0;">
+                <div class="pt-4 pb-4" onclick="location.href='{{ path('function2') }}';">
+                    <h3>Estimer sa surface</h3>
+                </div>
+            </div>
+            <div class="col-4 border text-center" id="nav_fct" style="padding: 0; margin: 0;">
+                <div class="pt-4 pb-4" onclick="location.href='{{ path('function3') }}';">
+                    <h3>Fonctionnalité 3</h3>
+                </div>
+            </div>
+        </nav>
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %}
     </body>

@@ -1,14 +1,33 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Estimation de surface{% endblock %}
+
 {% block body %}
-    <div class="">
-        {% if type == "1" %}
-            <p>Avec votre budget, vous pouvez avoir une maison de :</p>
-            <p>{{surfaceMax}}m² avec {{terrain}}m² de terrain</p>
-            <p>{{surface}}m² avec {{terrainMax}}m² de terrain</p>
-        {% elseif type == "2"%}
-            <p>Avec votre budget, vous pouvez avoir un appartement de: {{surface}}m²</p>
-        {% endif %}
-    </div>
+
+
 {% endblock %}
 
+{%  if type != null %}
+    <div class="row mb-3">
+                <div class="col mb-3">
+
+
+
+                </div>
+
+                <div class="col text_fonction2">
+                    {% if type == "1" %}
+
+                        <p>Avec votre budget, vous pouvez avoir une maison de :</p>
+                        <p>{{surfaceMax}}m² avec {{terrain}}m² de terrain</p>
+
+                        {% if surface != null %}
+                            <p>{{surface}}m² avec {{terrainMax}}m² de terrain</p>
+                        {% endif %}
+
+                    {% elseif type == "2"%}
+                        <p>Avec votre budget, vous pouvez avoir un appartement de: {{surface}}m²</p>
+                    {% endif %}
+                </div>
+            </div>
+{% endif %}
