@@ -11,7 +11,7 @@ use Phpml\SupportVectorMachine\Kernel;
 
 class Function3Controller extends AbstractController {
     /**
-     * @Route("/pres-de-chez-moi", name="function3")
+     * @Route("/pres-de-chez-moi", name="pres-de-chez-moi")
      */
     public function function3(Request $request)
     { 

@@ -123,3 +123,9 @@ input::-webkit-inner-spin-button {
     border: 1px solid black;
     padding: 1em;
 }
+
+#form_latitude, #form_longitude, #form_distance {
+    width: 10%;
+    margin : 1em;
+    display: inline-block !important;
+}

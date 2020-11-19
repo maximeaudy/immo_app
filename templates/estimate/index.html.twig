@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Estimation du prix{% endblock %}
+
+{% block body %}
+
+<div class="container mt-5">
+    {{ form_start(estimatePriceForm) }}
+    <div class="row mb-3">
+        <div class="col-4">
+            {{ form_label(estimatePriceForm.cityCode) }}
+            {{ form_widget(estimatePriceForm.cityCode) }}
+        </div>
+        <div class="col-4">
+            <label>Section
+                <a href="#"
+                   onclick="window.open('https://www.cadastre.gouv.fr/scpc/accueil.do', 'popupwindow', 'width=500,height=500,scrollbars,resizable');
+           return false;">Connaitre sa section
+                </a>
+            </label>
+            {{ form_widget(estimatePriceForm.section) }}
+        </div>
+        <div class="col-4">
+            {{ form_row(estimatePriceForm.type) }}
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-4">
+            {{ form_row(estimatePriceForm.surface) }}
+        </div>
+        <div class="col-4">
+            {{ form_row(estimatePriceForm.area) }}
+        </div>
+        <div class="col-4">
+            {{ form_row(estimatePriceForm.numberRoom) }}
+        </div>
+    </div>
+    <div class="row mb-3 text-center">
+        <div class="col-3">
+            {{ form_row(estimatePriceForm.modern) }}
+        </div>
+        <div class="col-3">
+            {{ form_row(estimatePriceForm.transport) }}
+            <small class="form-text text-muted">( 5 mins a pieds )</small>
+        </div>
+        <div class="col-3">
+            {{ form_row(estimatePriceForm.shops) }}
+            <small class="form-text text-muted">( 5 mins a pieds )</small>
+        </div>
+        <div class="col-3">
+            {{ form_row(estimatePriceForm.travaux) }}
+        </div>
+    </div>
+    <div class="col mb-3">
+        {{ form_widget(estimatePriceForm.save, {'attr': {'class': 'btn btn-primary btn-lg btn-block'}}) }}
+    </div>
+    {{ form_end(estimatePriceForm) }}
+
+    <div class="row d-flex justify-content-between mt-5">
+        <div class="border border-primary rounded text-center p-2">
+            <div class="pl-5 pr-5">
+                <h3> Prix estimé aujourd'hui</h3>
+            </div>
+            <div class="p-5">
+                <h1>{{ estimatePrice }} €</h1>
+            </div>
+        </div>
+        <div class="border border-primary rounded text-center p-2">
+            <div class="pl-5 pr-5 ">
+                <h3> Prix estimé dans un an</h3>
+            </div>
+            <div class="p-5">
+                <h1>{{ estimatePrice2years }} €</h1>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
