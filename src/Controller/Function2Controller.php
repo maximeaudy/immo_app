@@ -49,6 +49,7 @@ class Function2Controller extends AbstractController
             'terrain' => $terrain ?? null,
             'surfaceMax' => $surfaceMax ?? null,
             'terrainMax' => $terrainMax ?? null,
+            'nbpiece' => $nbpiece ?? null,
             'form' => $form->createView()
         ]);
     }

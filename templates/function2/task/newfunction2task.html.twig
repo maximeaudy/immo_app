@@ -26,6 +26,7 @@
         {{ form_end(form) }}
 
 
+        {% if type!=null %}
         <div class="row d-flex justify-content-between mt-5">
             <div class="border border-primary rounded text-center p-2">
                 {% if type == null  or type=="1" and surface != null%}
@@ -61,6 +62,12 @@
                     <div class="p-5">
                         <h1> {{ surface }}m&#178;</h1>
                     </div>
+                    <div class="pl-5 pr-5 ">
+                        <h3>Nombre de piece principales</h3>
+                    </div>
+                    <div class="p-5">
+                        <h1> {{ nbpiece }}m&#178;</h1>
+                    </div>
                 {% endif %}
             </div>
             <div class=" text-center p-2">
@@ -95,4 +102,5 @@
             {% endif %}
         </div>
     </div>
+    {% endif %}
 {% endblock %}

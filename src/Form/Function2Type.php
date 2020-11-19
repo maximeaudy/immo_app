@@ -4,13 +4,11 @@ namespace App\Form\Type;
 
 use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -23,7 +21,19 @@ class Function2Type extends AbstractType
                 'label' => 'Budget :'
             ])
             ->add('code_postal', IntegerType::class,[
-                'label' => 'Code Postal :'
+                'label' => 'Code Postal :',
+                'constraints' => [
+                    new Assert\Callback(
+                        ['callback' => static function ($data, ExecutionContextInterface $context) {
+                            if ((!is_numeric($data)) OR (strlen($data)!=5)) {
+                                $context
+                                    ->buildViolation("Veuillez entrer un code postal valide, exemple: 33000")
+                                    ->addViolation()
+                                ;
+                            }
+                        }]
+                    )
+                ]
             ])
             ->add('type',ChoiceType::class,[
                 'choices' =>[
